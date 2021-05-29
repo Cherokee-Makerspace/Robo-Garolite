@@ -16,16 +16,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 #include "../gcode.h"
 #include "../../MarlinCore.h" // for stepper_inactive_time, disable_e_steppers
-#include "../../lcd/ultralcd.h"
+#include "../../lcd/marlinui.h"
 #include "../../module/stepper.h"
 
-#if BOTH(AUTO_BED_LEVELING_UBL, ULTRA_LCD)
+#if ENABLED(AUTO_BED_LEVELING_UBL)
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
@@ -34,12 +34,10 @@
  */
 void GcodeSuite::M17() {
   if (parser.seen("XYZE")) {
-    if (parser.seen('X')) ENABLE_AXIS_X();
-    if (parser.seen('Y')) ENABLE_AXIS_Y();
-    if (parser.seen('Z')) ENABLE_AXIS_Z();
-    #if HAS_E_STEPPER_ENABLE
-      if (parser.seen('E')) enable_e_steppers();
-    #endif
+    if (parser.seen_test('X')) ENABLE_AXIS_X();
+    if (parser.seen_test('Y')) ENABLE_AXIS_Y();
+    if (parser.seen_test('Z')) ENABLE_AXIS_Z();
+    if (TERN0(HAS_E_STEPPER_ENABLE, parser.seen_test('E'))) enable_e_steppers();
   }
   else {
     LCD_MESSAGEPGM(MSG_NO_MOVE);
@@ -52,26 +50,20 @@ void GcodeSuite::M17() {
  */
 void GcodeSuite::M18_M84() {
   if (parser.seenval('S')) {
+    reset_stepper_timeout();
     stepper_inactive_time = parser.value_millis_from_seconds();
   }
   else {
     if (parser.seen("XYZE")) {
       planner.synchronize();
-      if (parser.seen('X')) DISABLE_AXIS_X();
-      if (parser.seen('Y')) DISABLE_AXIS_Y();
-      if (parser.seen('Z')) DISABLE_AXIS_Z();
-      #if HAS_E_STEPPER_ENABLE
-        if (parser.seen('E')) disable_e_steppers();
-      #endif
+      if (parser.seen_test('X')) DISABLE_AXIS_X();
+      if (parser.seen_test('Y')) DISABLE_AXIS_Y();
+      if (parser.seen_test('Z')) DISABLE_AXIS_Z();
+      if (TERN0(HAS_E_STEPPER_ENABLE, parser.seen_test('E'))) disable_e_steppers();
     }
     else
       planner.finish_and_disable();
 
-    #if HAS_LCD_MENU && ENABLED(AUTO_BED_LEVELING_UBL)
-      if (ubl.lcd_map_control) {
-        ubl.lcd_map_control = false;
-        ui.defer_status_screen(false);
-      }
-    #endif
+    TERN_(AUTO_BED_LEVELING_UBL, ubl.steppers_were_disabled());
   }
 }

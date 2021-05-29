@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,8 +26,13 @@
 
 #include "../gcode.h"
 #include "../../module/motion.h"
-#include "../../lcd/ultralcd.h"
+#include "../../lcd/marlinui.h"
 #include "../../libs/buzzer.h"
+#include "../../MarlinCore.h"
+
+void M206_report() {
+  SERIAL_ECHOLNPAIR_P(PSTR("M206 X"), home_offset.x, SP_Y_STR, home_offset.y, SP_Z_STR, home_offset.z);
+}
 
 /**
  * M206: Set Additional Homing Offset (X Y Z). SCARA aliases T=X, P=Y
@@ -37,8 +42,8 @@
  * ***              In the 2.0 release, it will simply be disabled by default.
  */
 void GcodeSuite::M206() {
-  LOOP_XYZ(i)
-    if (parser.seen(XYZ_CHAR(i)))
+  LOOP_LINEAR_AXES(i)
+    if (parser.seen(AXIS_CHAR(i)))
       set_home_offset((AxisEnum)i, parser.value_linear_units());
 
   #if ENABLED(MORGAN_SCARA)
@@ -46,7 +51,10 @@ void GcodeSuite::M206() {
     if (parser.seen('P')) set_home_offset(B_AXIS, parser.value_float()); // Psi
   #endif
 
-  report_current_position();
+  if (!parser.seen("XYZ"))
+    M206_report();
+  else
+    report_current_position();
 }
 
 /**
@@ -61,10 +69,10 @@ void GcodeSuite::M206() {
  *       Use M206 to set these values directly.
  */
 void GcodeSuite::M428() {
-  if (axis_unhomed_error()) return;
+  if (homing_needed_error()) return;
 
   xyz_float_t diff;
-  LOOP_XYZ(i) {
+  LOOP_LINEAR_AXES(i) {
     diff[i] = base_home_pos((AxisEnum)i) - current_position[i];
     if (!WITHIN(diff[i], -20, 20) && home_dir((AxisEnum)i) > 0)
       diff[i] = -current_position[i];
@@ -76,7 +84,7 @@ void GcodeSuite::M428() {
     }
   }
 
-  LOOP_XYZ(i) set_home_offset((AxisEnum)i, diff[i]);
+  LOOP_LINEAR_AXES(i) set_home_offset((AxisEnum)i, diff[i]);
   report_current_position();
   LCD_MESSAGEPGM(MSG_HOME_OFFSETS_APPLIED);
   BUZZ(100, 659);
