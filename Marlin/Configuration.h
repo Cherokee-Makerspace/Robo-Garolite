@@ -1237,8 +1237,8 @@
 // @section machine
 
 // The size of the printable area
-#define X_BED_SIZE 228 //robo
-#define Y_BED_SIZE 228 //robo
+#define X_BED_SIZE 220 //robo
+#define Y_BED_SIZE 200 //robo
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
