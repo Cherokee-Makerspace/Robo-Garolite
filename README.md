@@ -16,7 +16,7 @@ This is for a Robo 3D R1 with the following mods:
 ##### Notes
 1. Glass bed had a small chip so the garolite sheet was a quick and easy fix.
 2. 300mm rods were a little shorter than the stock rods so we had to move 2 bed magnets to accomodate. Y_BED_SIZE was reduced to 200 for this reason.
-3. Some Robo R1 (non +) models use a coarser Z lead screw. STEPS/UNIT for this model is 800 and not 2560.
+3. Some Robo R1 (non +) models use a different Z lead screw. STEPS/UNIT for this model is 800 and not 2560.
 
 ---
 ### Summary of Changes
