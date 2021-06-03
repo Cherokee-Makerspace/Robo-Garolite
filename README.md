@@ -35,6 +35,11 @@ This is for a Robo 3D R1 with the following mods:
 //============================= Z Probe Options =============================
 `#define FIX_MOUNTED_PROBE`
 
+
+`#define NOZZLE_TO_PROBE_OFFSET { 0, 0, 0 }`
+
+`#define PROBING_MARGIN 35`
+
 `#define XY_PROBE_FEEDRATE (180*60)`
 
 
@@ -60,6 +65,8 @@ This is for a Robo 3D R1 with the following mods:
 `#define PREHEAT_BEFORE_LEVELING`
 
 `#define LCD_BED_LEVELING`
+
+`#define Z_SAFE_HOMING`
 
 //============================= Additional Features ===========================
 `#define PREHEAT_2_LABEL       "PETG"`
