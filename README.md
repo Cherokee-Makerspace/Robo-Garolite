@@ -40,7 +40,7 @@ This is for a Robo 3D R1 with the following mods:
 
 `#define PROBING_MARGIN 35`
 
-`#define XY_PROBE_FEEDRATE (180*60)`
+`#define XY_PROBE_FEEDRATE (220*60)`
 
 
 `#define INVERT_X_DIR true`
